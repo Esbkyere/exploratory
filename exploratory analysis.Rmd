@@ -126,13 +126,77 @@ weather_df %>%
 ```
 
 
+General summaries
 
 ```{r}
+weather_df %>% 
+group_by(month) %>% 
+  summarize(
+    mean_tmax = mean(tmax)
+  )
+``` 
 
+there are missing vslues so you can get rid of them
+
+```{r}
+weather_df %>% 
+group_by(month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    median_tmin = median(tmin, na.rm = TRUE)
+  )
+``` 
+
+THIS IS A DATAFRAME!
+```{r}
+weather_df %>% 
+group_by(name, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    median_tmin = median(tmin, na.rm = TRUE)
+  )
+
+``` 
+
+We can make a plot from the summary
+```{r}
+weather_df %>% 
+group_by(name, month) %>% 
+  summarize(
+    mean_tmax = mean(tmax, na.rm = TRUE),
+    median_tmin = median(tmin, na.rm = TRUE)
+  ) %>% 
+ggplot(aes(x = month, y = mean_tmax, color = name)) +
+  geom_point() +
+  geom_line()  
 ```
 
 
+what is below shows what we would have had if we 
+had just put in our raw date and tmax..it literally gives us the the data day by day so depending on what you want to convey in your research
+```{r}
+weather_df %>% 
+ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point() +
+  geom_line()  
+```
 
+ Suppose you want to summarize many columns
+```{r}
+ weather_df %>% 
+group_by(name, month) %>% 
+summarize(across(prcp:tmin, mean))
+```
 
+Reminder: sometimes your dresults are easier to read in another format
+```{r}
+ weather_df %>% 
+group_by(name, month) %>% 
+summarize(mean_tmax = mean(tmax)) %>% 
+  pivot_wider(
+names_from = name,
+values_from = mean_tmax) %>% 
+knitr::kable(digits = 1)
+```
 
 
