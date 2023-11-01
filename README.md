@@ -1,0 +1,2 @@
+# exploratory
+lec 6
