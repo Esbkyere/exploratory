@@ -1,0 +1,128 @@
+---
+title: "Exploratory analysis"
+author: "Esther Kyeremah"
+date: "2023-11-01"
+output: github_document
+---
+
+
+```{r}
+library(tidyverse)
+library(ggridges)
+```
+
+##Setting options
+
+```{r, eval = FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  gif.asp = .6,
+  out.width = "90%"
+)
+
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.comtinuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+```
+
+## Load weather data
+ 
+```{r}
+weather_df = 
+  rnoaa::meteo_pull_monitors(
+    c("USW00094728", "USW00022534", "USS0023B17S"),
+    var = c("PRCP", "TMIN", "TMAX"), 
+    date_min = "2021-01-01",
+    date_max = "2022-12-31") |>
+  mutate(
+    name = recode(
+      id, 
+      USW00094728 = "CentralPark_NY", 
+      USW00022534 = "Molokai_HI",
+      USS0023B17S = "Waterhole_WA"),
+    tmin = tmin / 10,
+    tmax = tmax / 10,
+month = lubridate::floor_date(date, unit = "month")) %>% 
+  select(name, id, everything())
+```
+
+
+##Group BY
+```{r}
+weather_df %>% 
+  group_by(name, month)
+```
+So we see that theyve written groups: name [3] under the tibble(easy to miss).
+
+you can ungroup after doing whatever analysis too.. and you can ungroup for just one or more variables
+
+```{r}
+weather_df %>% 
+group_by(name, month) %>% 
+ungroup(name)
+```
+
+
+##counting things
+
+count name or month or both name and month observations
+```{r}
+weather_df %>% 
+group_by(name) %>% 
+  summarize(n_obs = n())
+
+weather_df %>% 
+group_by(month) %>% 
+  summarize(n_obsi = n())
+
+weather_df %>% 
+group_by(name, month) %>% 
+  summarize(n_obsis = n())
+
+```
+
+
+
+we can just use the count function
+
+```{r}
+weather_df %>% 
+  count(name, month, name = "n_obs")
+```
+
+other helpful counters
+```{r}
+weather_df %>% 
+group_by(month) %>% 
+  summarize(
+    n_obs = n(),
+    n_days = n_distinct(date))
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
